@@ -1,7 +1,18 @@
-from typing import Any, AsyncGenerator, Callable, List, Optional, Tuple, Union
+from typing import (
+    Any,
+    AsyncGenerator,
+    Callable,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Type,
+    Union,
+)
 from typing_extensions import Protocol
 
 from graphql import DocumentNode, ExecutionResult, GraphQLError, GraphQLSchema
+from graphql.validation.rules import ASTValidationRule
 
 
 class SchemaBindable(Protocol):
@@ -22,3 +33,9 @@ ErrorFormatter = Callable[[GraphQLError, bool], dict]
 
 ContextValue = Union[Any, Callable[[Any], Any]]
 RootValue = Union[Any, Callable[[Optional[Any], DocumentNode], Any]]
+ValidationRules = Union[
+    Sequence[Type[ASTValidationRule]],
+    Callable[
+        [Optional[Any], DocumentNode, dict], Optional[Sequence[Type[ASTValidationRule]]]
+    ],
+]

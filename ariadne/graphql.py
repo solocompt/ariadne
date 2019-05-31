@@ -6,7 +6,13 @@ from graphql.execution import Middleware
 
 from .format_error import format_error
 from .logger import log_error
-from .types import ErrorFormatter, GraphQLResult, RootValue, SubscriptionResult
+from .types import (
+    ErrorFormatter,
+    GraphQLResult,
+    RootValue,
+    SubscriptionResult,
+    ValidationRules,
+)
 
 
 async def graphql(
@@ -17,7 +23,7 @@ async def graphql(
     root_value: Optional[RootValue] = None,
     debug: bool = False,
     logger: Optional[str] = None,
-    validation_rules=None,
+    validation_rules: Optional[ValidationRules] = None,
     error_formatter: ErrorFormatter = format_error,
     middleware: Middleware = None,
     **kwargs,
@@ -72,7 +78,7 @@ def graphql_sync(
     root_value: Optional[RootValue] = None,
     debug: bool = False,
     logger: Optional[str] = None,
-    validation_rules=None,
+    validation_rules: Optional[ValidationRules] = None,
     error_formatter: ErrorFormatter = format_error,
     middleware: Middleware = None,
     **kwargs,
@@ -88,6 +94,8 @@ def graphql_sync(
         document = parse(query)
 
         if validation_rules:
+            if callable(validation_rules):
+                validation_rules = validation_rules(context_value, document, data)
             errors = _graphql.validate(schema, document, validation_rules)
             if errors:
                 return handle_graphql_errors(

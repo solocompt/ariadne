@@ -33,6 +33,8 @@ async def graphql(
         document = parse(query)
 
         if validation_rules:
+            if callable(validation_rules):
+                validation_rules = validation_rules(context_value, document, data)
             errors = _graphql.validate(schema, document, validation_rules)
             if errors:
                 return handle_graphql_errors(
